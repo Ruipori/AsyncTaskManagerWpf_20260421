@@ -1,0 +1,468 @@
+﻿<Window x:Class="AsyncTaskManagerWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Async Task Manager"
+        Height="818"
+        Width="1400"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F1F8">
+
+    <Window.Resources>
+
+        <!-- 공통 색상 -->
+        <SolidColorBrush x:Key="PageBackgroundBrush" Color="#F5F1F8"/>
+        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FCFBFE"/>
+        <SolidColorBrush x:Key="SoftPanelBrush" Color="#F2EEF8"/>
+        <SolidColorBrush x:Key="BorderBrushSoft" Color="#E8E0F0"/>
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1B1A3A"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#7F7B99"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#6C63FF"/>
+        <SolidColorBrush x:Key="AccentBrush2" Color="#8B6EF3"/>
+
+        <LinearGradientBrush x:Key="PurpleButtonBrush" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#5F62F3" Offset="0"/>
+            <GradientStop Color="#8C6CF5" Offset="1"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="Height" Value="54"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="{StaticResource PurpleButtonBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="18">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SidebarMenuButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#403A8B"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="#F0ECF8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="66"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="18">
+                            <ContentPresenter VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E5DDF0"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Foreground" Value="#1B1A3A"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="14">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="0"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernMultiLineTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E5DDF0"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Foreground" Value="#1B1A3A"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="14">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CardBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="24"/>
+            <Setter Property="Padding" Value="20"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="290"/>
+            <ColumnDefinition Width="24"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 왼쪽 사이드바 -->
+        <Border Grid.Column="0"
+                Style="{StaticResource CardBorderStyle}"
+                Padding="24">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Border Width="45"
+                            Height="45"
+                            Background="{StaticResource AccentBrush}"
+                            CornerRadius="18">
+                        <TextBlock Text="✓"
+                                   Foreground="White"
+                                   FontSize="28"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+
+                    <TextBlock Text="Task Manager"
+                               Margin="14,0,0,0"
+                               VerticalAlignment="Center"
+                               FontSize="25"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2">
+                    <Button x:Name="DashboardButton"
+                            Style="{StaticResource SidebarMenuButtonStyle}"
+                            Content="Dashboard"
+                            Margin="0,0,0,16"
+                            IsEnabled="False"/>
+
+                    <Button x:Name="AllFilterButton"
+                            Style="{StaticResource SidebarMenuButtonStyle}"
+                            Content="전체 작업"
+                            Margin="0,0,0,16"
+                            Background="White"
+                            Click="AllFilter_Click"/>
+
+                    <Button x:Name="ActiveFilterButton"
+                            Style="{StaticResource SidebarMenuButtonStyle}"
+                            Content="진행 중"
+                            Margin="0,0,0,16"
+                            Background="White"
+                            Click="ActiveFilter_Click"/>
+
+                    <Button x:Name="CompletedFilterButton"
+                            Style="{StaticResource SidebarMenuButtonStyle}"
+                            Content="완료됨"
+                            Background="White"
+                            Click="CompletedFilter_Click"/>
+                </StackPanel>
+
+                <Border Grid.Row="4"
+                        Background="White"
+                        CornerRadius="24"
+                        Padding="20"
+                        BorderBrush="#ECE3F4"
+                        BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="리스트 현황"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                        <Grid Margin="0,18,0,10" HorizontalAlignment="Center">
+                            <Ellipse Width="150" Height="150"
+                                     Stroke="#E5DDF3"
+                                     StrokeThickness="14"/>
+                            <TextBlock Text="{Binding ProgressText}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="28"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource AccentBrush}"/>
+                        </Grid>
+
+                        <TextBlock Text="{Binding ProgressDetailText}"
+                                   HorizontalAlignment="Center"
+                                   FontSize="17"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 오른쪽 메인 -->
+        <Border Grid.Column="2"
+                Style="{StaticResource CardBorderStyle}"
+                Padding="28">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- 상단 -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="380"/>
+                        <ColumnDefinition Width="24"/>
+                        <ColumnDefinition Width="240"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="{Binding TodayText}"
+                                   FontSize="36"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                        <TextBlock Text="오늘도 좋은 하루 보내세요! 👋"
+                                   Margin="0,8,0,0"
+                                   FontSize="20"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                    </StackPanel>
+
+                    <TextBox Grid.Column="1"
+                             Style="{StaticResource ModernTextBoxStyle}"
+                             VerticalAlignment="Center"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Button Grid.Column="3"
+                            Style="{StaticResource RoundedButtonStyle}"
+                            Content="+  새 작업 추가"
+                            Click="AddButton_Click"/>
+                </Grid>
+
+                <!-- 입력 카드 -->
+                <Border Grid.Row="2"
+                        Background="#FCFBFE"
+                        CornerRadius="22"
+                        BorderBrush="#E8E0F0"
+                        BorderThickness="1"
+                        Padding="20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.2*"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="1.7*"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="180"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="제목"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                                     Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="설명"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBox Height="52"
+                                     Style="{StaticResource ModernTextBoxStyle}"
+                                     Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="4"
+                                VerticalAlignment="Bottom"
+                                Style="{StaticResource RoundedButtonStyle}"
+                                Content="추가하기"
+                                Click="AddButton_Click"/>
+                    </Grid>
+                </Border>
+
+                <!-- 리스트 -->
+                <Border Grid.Row="4"
+                        Background="#FCFBFE"
+                        CornerRadius="22"
+                        BorderBrush="#E8E0F0"
+                        BorderThickness="1"
+                        Padding="0">
+                    <DataGrid ItemsSource="{Binding FilteredTodos}"
+                              SelectedItem="{Binding SelectedTodo, Mode=TwoWay}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              BorderThickness="0"
+                              RowHeight="25"
+                              ColumnHeaderHeight="43"
+                              Background="Transparent"
+                              FontSize="15"
+                              Margin="0,0,0,-1"
+                              SelectionMode="Single">
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#F3EFFA"/>
+                                <Setter Property="Foreground" Value="#4C429A"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="15"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Padding" Value="12"/>
+                            </Style>
+
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="#1B1A3A"/>
+                                <Setter Property="BorderBrush" Value="#EEE7F5"/>
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                        <Setter Property="Foreground" Value="#A0A0A0"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Padding" Value="12,6"/>
+                            </Style>
+                            
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID"
+                                                Binding="{Binding Id}"
+                                                Width="50"
+                                                IsReadOnly="True">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            
+                            <DataGridTextColumn Header="제목"
+                                                Binding="{Binding Title}"
+                                                Width="200">
+                                <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Left"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                            <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            <Setter Property="Foreground" Value="#A0A0A0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Header="설명"
+                                                Binding="{Binding Description}"
+                                                Width="*">
+                                <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Left"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                            <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            <Setter Property="Foreground" Value="#A0A0A0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridCheckBoxColumn Header="상태"
+                                                    Binding="{Binding IsCompleted}"
+                                                    Width="60">
+                                <DataGridCheckBoxColumn.ElementStyle>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridCheckBoxColumn.ElementStyle>
+                            </DataGridCheckBoxColumn>
+                            
+                            <DataGridTextColumn Header="생성일"
+                                                Binding="{Binding CreatedAt, StringFormat=yyyy-MM-dd HH:mm}"
+                                                Width="220"
+                                                IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+
+                <!-- 하단 액션 버튼 -->
+                <UniformGrid Grid.Row="6"
+                             Columns="4"
+                             HorizontalAlignment="Stretch"
+                             Margin="0">
+                    <Button Style="{StaticResource RoundedButtonStyle}"
+                            Margin="0,0,18,0"
+                            Content="불러오기"
+                            Click="LoadButton_Click"/>
+
+                    <Button Style="{StaticResource RoundedButtonStyle}"
+                            Margin="0,0,18,0"
+                            Content="저장하기"
+                            Click="SaveButton_Click"/>
+
+                    <Button Style="{StaticResource RoundedButtonStyle}"
+                            Margin="0,0,18,0"
+                            Content="완료 토글"
+                            Click="ToggleCompleteButton_Click"/>
+
+                    <Button Style="{StaticResource RoundedButtonStyle}"
+                            Content="삭제하기"
+                            Click="DeleteButton_Click"/>
+                </UniformGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
