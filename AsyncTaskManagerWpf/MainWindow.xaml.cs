@@ -70,22 +70,28 @@ namespace AsyncTaskManagerWpf
             }
         }
 
-        public string SearchText {
+        public string SearchText
+        {
             get { return _searchText; }
-            set {
+            set
+            {
                 _searchText = value;
                 OnPropertyChanged();
-                if ( FilteredTodos != null ) {
+
+                if ( FilteredTodos != null )
+                {
                     FilteredTodos.Refresh();
                 }
             }
         }
 
-        public string TodayText {
+        public string TodayText
+        {
             get { return DateTime.Now.ToString( "M월 d일, dddd" ); }
         }
 
-        public string ProgressText {
+        public string ProgressText
+        {
             get {
                 if ( Todos.Count == 0 )
                     return "0%";
@@ -181,11 +187,18 @@ namespace AsyncTaskManagerWpf
 
         private async void AddButton_Click( object sender, RoutedEventArgs e )
         {
-            if ( string.IsNullOrWhiteSpace( NewTitle ) ) {
-                MessageBox.Show( "제목을 입력해주세요.", "알림", MessageBoxButton.OK, MessageBoxImage.Information );
+            //if ( string.IsNullOrWhiteSpace( NewTitle ) ) {
+            //    MessageBox.Show( "제목을 입력해주세요.", "알림", MessageBoxButton.OK, MessageBoxImage.Information );
+            //    return;
+            //}
+            if ( string.IsNullOrWhiteSpace( NewTitle ) )
+            {
+                new CustomMessageBox( "제목을 입력해주세요.", "알림" )
+                {
+                    Owner = this
+                }.ShowDialog();
                 return;
             }
-
             int nextId = Todos.Any() ? Todos.Max( t => t.Id ) + 1 : 1;
 
             var todo = new TodoItem
@@ -207,33 +220,66 @@ namespace AsyncTaskManagerWpf
 
         private async void DeleteButton_Click( object sender, RoutedEventArgs e )
         {
-            if ( SelectedTodo == null ) {
-                MessageBox.Show( "삭제할 항목을 선택해주세요.", "알림", MessageBoxButton.OK, MessageBoxImage.Information );
+            //if ( SelectedTodo == null ) {
+            //    MessageBox.Show( "삭제할 항목을 선택해주세요.", "알림", MessageBoxButton.OK, MessageBoxImage.Information );
+            //    return;
+            //}
+
+            //var result = MessageBox.Show(
+            //    $"'{SelectedTodo.Title}' 항목을 삭제할까요?",
+            //    "삭제 확인",
+            //    MessageBoxButton.YesNo,
+            //    MessageBoxImage.Question );
+
+            //if ( result != MessageBoxResult.Yes )
+            //    return;
+
+            //Todos.Remove( SelectedTodo );
+            //SelectedTodo = null;
+            //RefreshDashboard();
+            //await SaveTodosAsync();
+            if ( SelectedTodo == null )
+            {
+                new CustomMessageBox( "삭제할 항목을 선택해주세요.", "알림" )
+                {
+                    Owner = this
+                }.ShowDialog();
                 return;
             }
 
-            var result = MessageBox.Show(
-                $"'{SelectedTodo.Title}' 항목을 삭제할까요?",
-                "삭제 확인",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question );
+            var msg = new CustomMessageBox( "정말 삭제하시겠습니까?", "삭제", true );
+            msg.Owner = this;
+            msg.ShowDialog();
 
-            if ( result != MessageBoxResult.Yes )
+            if ( !msg.Result )
                 return;
 
             Todos.Remove( SelectedTodo );
-            SelectedTodo = null;
-            RefreshDashboard();
-            await SaveTodosAsync();
-        }
 
+            await SaveTodosAsync();
+
+            new CustomMessageBox( "삭제되었습니다.", "완료" )
+            {
+                Owner = this
+            }.ShowDialog();
+        }
+        private void ClearSearch_Click( object sender, RoutedEventArgs e )
+        {
+            SearchText = "";
+        }
         private async void ToggleCompleteButton_Click( object sender, RoutedEventArgs e )
         {
+            //if ( SelectedTodo == null ) {
+            //    MessageBox.Show( "완료 상태를 바꿀 항목 선택.", "알림", MessageBoxButton.OK, MessageBoxImage.Information );
+            //    return;
+            //}
             if ( SelectedTodo == null ) {
-                MessageBox.Show( "완료 상태를 바꿀 항목 선택.", "알림", MessageBoxButton.OK, MessageBoxImage.Information );
+                new CustomMessageBox( "완료 상태를 바꿀 항목 선택해주세요.", "알림" )
+                {
+                    Owner = this
+                }.ShowDialog();
                 return;
             }
-
             SelectedTodo.IsCompleted = !SelectedTodo.IsCompleted;
             RefreshDashboard();
             await SaveTodosAsync();
@@ -241,14 +287,31 @@ namespace AsyncTaskManagerWpf
 
         private async void SaveButton_Click( object sender, RoutedEventArgs e )
         {
+            //await SaveTodosAsync();
+            //MessageBox.Show( "저장이 완료되었습니다.", "저장", MessageBoxButton.OK, MessageBoxImage.Information );
+            var msg = new CustomMessageBox( "저장하시겠습니까?", "저장", true );
+            msg.Owner = this;
+            msg.ShowDialog();
+
+            if ( !msg.Result )
+                return;
+
             await SaveTodosAsync();
-            MessageBox.Show( "저장이 완료되었습니다.", "저장", MessageBoxButton.OK, MessageBoxImage.Information );
+
+            new CustomMessageBox( "저장이 완료되었습니다.", "완료" )
+            {
+                Owner = this
+            }.ShowDialog();
         }
 
         private async void LoadButton_Click( object sender, RoutedEventArgs e )
         {
             await LoadTodosAsync();
-            MessageBox.Show( "불러오기가 완료되었습니다.", "불러오기", MessageBoxButton.OK, MessageBoxImage.Information );
+            //MessageBox.Show( "불러오기가 완료되었습니다.", "불러오기", MessageBoxButton.OK, MessageBoxImage.Information );
+            new CustomMessageBox( "불러오기가 완료되었습니다.", "불러오기" )
+            {
+                Owner = this
+            }.ShowDialog();
         }
 
         private void AllFilter_Click( object sender, RoutedEventArgs e )
@@ -271,13 +334,41 @@ namespace AsyncTaskManagerWpf
             UpdateSidebarFilterButtons();
             RefreshDashboard();
         }
-
+        private void TitleBar_MouseDown( object sender, MouseButtonEventArgs e )
+        {
+            if ( e.ButtonState == MouseButtonState.Pressed ) {
+                DragMove();
+            }
+        }
+        private void Minimize_Click( object sender, RoutedEventArgs e )
+        {
+            WindowState = WindowState.Minimized;
+        }
+        private void Close_Click( object sender, RoutedEventArgs e )
+        {
+            Close();
+        }
+        private void Maximize_Click( object sender, RoutedEventArgs e )
+        {
+            if ( WindowState == WindowState.Maximized )
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.Maximized;
+        }
         private async System.Threading.Tasks.Task SaveTodosAsync()
         {
-            try {
+            try
+            {
                 await _repository.SaveAsync( Todos.ToList() );
-            } catch ( System.Exception ex ) {
-                MessageBox.Show( $"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error );
+            }
+            catch ( System.Exception ex )
+            {
+                //MessageBox.Show( $"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error );
+                new CustomMessageBox( $"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류" )
+                {
+                    Owner = this
+                }.ShowDialog();
+                //CustomMessageBox.ShowConfirm( $"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류", CustomMessageBoxType.Error );
             }
         }
 
@@ -294,7 +385,12 @@ namespace AsyncTaskManagerWpf
             }
             catch ( System.Exception ex )
             {
-                MessageBox.Show( $"불러오기 중 오류가 발생했습니다.\n{ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error );
+                //MessageBox.Show( $"불러오기 중 오류가 발생했습니다.\n{ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error );
+                new CustomMessageBox( $"불러오기 중 오류가 발생했습니다.\n{ex.Message}", "오류" )
+                {
+                    Owner = this
+                }.ShowDialog();
+                //CustomMessageBox.ShowConfirm( $"불러오기 중 오류가 발생했습니다.\n{ex.Message}", "오류", CustomMessageBoxType.Error );
             }
         }
         private void UpdateSidebarFilterButtons()

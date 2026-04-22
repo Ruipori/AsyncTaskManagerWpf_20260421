@@ -3,12 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:AsyncTaskManagerWpf.Converters"
         mc:Ignorable="d"
         Title="Async Task Manager"
         Height="818"
         Width="1400"
         WindowStartupLocation="CenterScreen"
-        Background="#F5F1F8">
+        Background="Transparent"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        AllowsTransparency="True">
 
     <Window.Resources>
 
@@ -26,6 +30,83 @@
             <GradientStop Color="#5F62F3" Offset="0"/>
             <GradientStop Color="#8C6CF5" Offset="1"/>
         </LinearGradientBrush>
+
+        <Style x:Key="TitleBarRoundButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="4,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <!-- Hover -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border"
+                                Property="Background"
+                                Value="#8B6EF3"/>
+                            </Trigger>
+
+                            <!-- Click -->
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border"
+                                Property="Background"
+                                Value="#5F62F3"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="TitleBarCloseButtonStyle" TargetType="Button"
+       BasedOn="{StaticResource TitleBarRoundButtonStyle}">
+
+            <Setter Property="Background" Value="#FF5F5F"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border"
+                                Property="Background"
+                                Value="#FF3B3B"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border"
+                                Property="Background"
+                                Value="#D92D2D"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <Style x:Key="RoundedButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
@@ -70,6 +151,84 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="AnimatedRoundedButtonStyle"
+                    TargetType="Button"
+                    BasedOn="{StaticResource RoundedButtonStyle}">
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                     To="1.06"
+                                     Duration="0:0:0.15"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                     To="1.06"
+                                     Duration="0:0:0.15"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                     To="1.0"
+                                     Duration="0:0:0.15"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                     To="1.0"
+                                     Duration="0:0:0.15"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="AnimatedSidebarMenuButtonStyle"
+       TargetType="Button"
+       BasedOn="{StaticResource SidebarMenuButtonStyle}">
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                     To="1.04"
+                                     Duration="0:0:0.15"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                     To="1.04"
+                                     Duration="0:0:0.15"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                     To="1.0"
+                                     Duration="0:0:0.15"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                     To="1.0"
+                                     Duration="0:0:0.15"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
         </Style>
 
         <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
@@ -126,209 +285,268 @@
             <Setter Property="CornerRadius" Value="24"/>
             <Setter Property="Padding" Value="20"/>
         </Style>
-
+        <conv:HighlightConverter x:Key="HighlightConverter"/>
     </Window.Resources>
 
-    <Grid Margin="24">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="290"/>
-            <ColumnDefinition Width="24"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <Border Background="#F5F1F8"
+            CornerRadius="24"
+            Margin="0">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="25"
+                              ShadowDepth="0"
+                              Opacity="0.22"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!-- 왼쪽 사이드바 -->
-        <Border Grid.Column="0"
+            <!-- ① 커스텀 타이틀바 -->
+            <Border Grid.Row="0"
+                Background="#6C63FF"
+                CornerRadius="24,24,0,0"
+                MouseLeftButtonDown="TitleBar_MouseDown"
+                Height="40" Margin="0,-1,0,11">
+                <Grid Margin="0,-3,0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="142.667"/>
+                        <ColumnDefinition Width="7.333"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Task Manager"
+                           VerticalAlignment="Center"
+                           Margin="15,10,0,1"
+                           Foreground="White"
+                           FontSize="16"
+                           FontWeight="SemiBold" Grid.RowSpan="2"/>
+
+                    <StackPanel
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0,7,0,-7" Grid.RowSpan="2" Grid.ColumnSpan="2">
+
+                        <Button Content="―"
+                                Style="{StaticResource TitleBarRoundButtonStyle}"
+                                Click="Minimize_Click"/>
+
+                        <Button Content="▢"
+                                Style="{StaticResource TitleBarRoundButtonStyle}"
+                                Click="Maximize_Click"/>
+
+                        <Button Content="✕"
+                                Style="{StaticResource TitleBarCloseButtonStyle}"
+                                Click="Close_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" Margin="24">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="290"/>
+                    <ColumnDefinition Width="24"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 왼쪽 사이드바 -->
+                <Border Grid.Column="0"
                 Style="{StaticResource CardBorderStyle}"
                 Padding="24">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="28"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="28"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Border Width="45"
+                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <Border Width="45"
                             Height="45"
                             Background="{StaticResource AccentBrush}"
                             CornerRadius="18">
-                        <TextBlock Text="✓"
+                                <TextBlock Text="✓"
                                    Foreground="White"
                                    FontSize="28"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
-                    </Border>
+                            </Border>
 
-                    <TextBlock Text="Task Manager"
+                            <TextBlock Text="Task Manager"
                                Margin="14,0,0,0"
                                VerticalAlignment="Center"
                                FontSize="25"
                                FontWeight="SemiBold"
                                Foreground="{StaticResource TextPrimaryBrush}"/>
-                </StackPanel>
+                        </StackPanel>
 
-                <StackPanel Grid.Row="2">
-                    <Button x:Name="DashboardButton"
+                        <StackPanel Grid.Row="2">
+                            <Button x:Name="DashboardButton"
                             Style="{StaticResource SidebarMenuButtonStyle}"
                             Content="Dashboard"
                             Margin="0,0,0,16"
                             IsEnabled="False"/>
 
-                    <Button x:Name="AllFilterButton"
-                            Style="{StaticResource SidebarMenuButtonStyle}"
+                            <Button x:Name="AllFilterButton"
+                            Style="{StaticResource AnimatedRoundedButtonStyle}"
                             Content="전체 작업"
                             Margin="0,0,0,16"
                             Background="White"
                             Click="AllFilter_Click"/>
 
-                    <Button x:Name="ActiveFilterButton"
-                            Style="{StaticResource SidebarMenuButtonStyle}"
+                            <Button x:Name="ActiveFilterButton"
+                            Style="{StaticResource AnimatedRoundedButtonStyle}"
                             Content="진행 중"
                             Margin="0,0,0,16"
                             Background="White"
                             Click="ActiveFilter_Click"/>
 
-                    <Button x:Name="CompletedFilterButton"
-                            Style="{StaticResource SidebarMenuButtonStyle}"
-                            Content="완료됨"
+                            <Button x:Name="CompletedFilterButton"
+                            Style="{StaticResource AnimatedRoundedButtonStyle}"
+                            Content="완료"
                             Background="White"
                             Click="CompletedFilter_Click"/>
-                </StackPanel>
+                        </StackPanel>
 
-                <Border Grid.Row="4"
+                        <Border Grid.Row="4"
                         Background="White"
                         CornerRadius="24"
                         Padding="20"
                         BorderBrush="#ECE3F4"
                         BorderThickness="1">
-                    <StackPanel>
-                        <TextBlock Text="리스트 현황"
+                            <StackPanel>
+                                <TextBlock Text="리스트 현황"
                                    FontSize="18"
                                    FontWeight="SemiBold"
                                    Foreground="{StaticResource TextPrimaryBrush}"/>
 
-                        <Grid Margin="0,18,0,10" HorizontalAlignment="Center">
-                            <Ellipse Width="150" Height="150"
+                                <Grid Margin="0,18,0,10" HorizontalAlignment="Center">
+                                    <Ellipse Width="150" Height="150"
                                      Stroke="#E5DDF3"
                                      StrokeThickness="14"/>
-                            <TextBlock Text="{Binding ProgressText}"
+                                    <TextBlock Text="{Binding ProgressText}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        FontSize="28"
                                        FontWeight="Bold"
                                        Foreground="{StaticResource AccentBrush}"/>
-                        </Grid>
+                                </Grid>
 
-                        <TextBlock Text="{Binding ProgressDetailText}"
+                                <TextBlock Text="{Binding ProgressDetailText}"
                                    HorizontalAlignment="Center"
                                    FontSize="17"
                                    Foreground="{StaticResource TextSecondaryBrush}"/>
-                    </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
                 </Border>
-            </Grid>
-        </Border>
 
-        <!-- 오른쪽 메인 -->
-        <Border Grid.Column="2"
+                <!-- 오른쪽 메인 -->
+                <Border Grid.Column="2"
                 Style="{StaticResource CardBorderStyle}"
                 Padding="28">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="24"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="24"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="24"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                <!-- 상단 -->
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="380"/>
-                        <ColumnDefinition Width="24"/>
-                        <ColumnDefinition Width="240"/>
-                    </Grid.ColumnDefinitions>
+                        <!-- 상단 -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="380"/>
+                                <ColumnDefinition Width="24"/>
+                                <ColumnDefinition Width="240"/>
+                            </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0">
-                        <TextBlock Text="{Binding TodayText}"
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding TodayText}"
                                    FontSize="36"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource TextPrimaryBrush}"/>
-                        <TextBlock Text="오늘도 좋은 하루 보내세요! 👋"
+                                <TextBlock Text="오늘도 좋은 하루 보내세요! 👋"
                                    Margin="0,8,0,0"
                                    FontSize="20"
                                    Foreground="{StaticResource TextSecondaryBrush}"/>
-                    </StackPanel>
+                            </StackPanel>
 
-                    <TextBox Grid.Column="1"
+                            <TextBox Grid.Column="1"
                              Style="{StaticResource ModernTextBoxStyle}"
                              VerticalAlignment="Center"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <Button Grid.Column="3"
-                            Style="{StaticResource RoundedButtonStyle}"
-                            Content="+  새 작업 추가"
-                            Click="AddButton_Click"/>
-                </Grid>
+                            <Button Grid.Column="3"
+                            Style="{StaticResource AnimatedRoundedButtonStyle}"
+                            Content="검색 초기화"
+                            Click="ClearSearch_Click"/>
+                        </Grid>
 
-                <!-- 입력 카드 -->
-                <Border Grid.Row="2"
+                        <!-- 입력 카드 -->
+                        <Border Grid.Row="2"
                         Background="#FCFBFE"
                         CornerRadius="22"
                         BorderBrush="#E8E0F0"
                         BorderThickness="1"
                         Padding="20">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.2*"/>
-                            <ColumnDefinition Width="24"/>
-                            <ColumnDefinition Width="1.7*"/>
-                            <ColumnDefinition Width="24"/>
-                            <ColumnDefinition Width="180"/>
-                        </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.2*"/>
+                                    <ColumnDefinition Width="24"/>
+                                    <ColumnDefinition Width="1.7*"/>
+                                    <ColumnDefinition Width="24"/>
+                                    <ColumnDefinition Width="180"/>
+                                </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="제목"
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="제목"
                                        FontSize="18"
                                        FontWeight="SemiBold"
                                        Margin="0,0,0,10"
                                        Foreground="{StaticResource TextPrimaryBrush}"/>
-                            <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                                    <TextBox Style="{StaticResource ModernTextBoxStyle}"
                                      Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
+                                </StackPanel>
 
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="설명"
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="설명"
                                        FontSize="18"
                                        FontWeight="SemiBold"
                                        Margin="0,0,0,10"
                                        Foreground="{StaticResource TextPrimaryBrush}"/>
-                            <TextBox Height="52"
+                                    <TextBox Height="52"
                                      Style="{StaticResource ModernTextBoxStyle}"
                                      Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
+                                </StackPanel>
 
-                        <Button Grid.Column="4"
+                                <Button Grid.Column="4"
                                 VerticalAlignment="Bottom"
-                                Style="{StaticResource RoundedButtonStyle}"
+                                Style="{StaticResource AnimatedRoundedButtonStyle}"
                                 Content="추가하기"
                                 Click="AddButton_Click"/>
-                    </Grid>
-                </Border>
+                            </Grid>
+                        </Border>
 
-                <!-- 리스트 -->
-                <Border Grid.Row="4"
+                        <!-- 리스트 -->
+                        <Border Grid.Row="4"
                         Background="#FCFBFE"
                         CornerRadius="22"
                         BorderBrush="#E8E0F0"
                         BorderThickness="1"
                         Padding="0">
-                    <DataGrid ItemsSource="{Binding FilteredTodos}"
+                            <DataGrid ItemsSource="{Binding FilteredTodos}"
                               SelectedItem="{Binding SelectedTodo, Mode=TwoWay}"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
@@ -341,128 +559,131 @@
                               FontSize="15"
                               Margin="0,0,0,-1"
                               SelectionMode="Single">
-                        <DataGrid.Resources>
-                            <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Background" Value="#F3EFFA"/>
-                                <Setter Property="Foreground" Value="#4C429A"/>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
-                                <Setter Property="FontSize" Value="15"/>
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Padding" Value="12"/>
-                            </Style>
+                                <DataGrid.Resources>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="#F3EFFA"/>
+                                        <Setter Property="Foreground" Value="#4C429A"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="FontSize" Value="15"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Padding" Value="12"/>
+                                    </Style>
 
-                            <Style TargetType="DataGridRow">
-                                <Setter Property="Background" Value="White"/>
-                                <Setter Property="Foreground" Value="#1B1A3A"/>
-                                <Setter Property="BorderBrush" Value="#EEE7F5"/>
+                                    <Style TargetType="DataGridRow">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Setter Property="Foreground" Value="#1B1A3A"/>
+                                        <Setter Property="BorderBrush" Value="#EEE7F5"/>
 
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsCompleted}" Value="True">
-                                        <Setter Property="Foreground" Value="#A0A0A0"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                <Setter Property="Foreground" Value="#A0A0A0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
 
-                            <Style TargetType="DataGridCell">
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Padding" Value="12,6"/>
-                            </Style>
-                            
-                        </DataGrid.Resources>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Padding" Value="12,6"/>
+                                    </Style>
 
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID"
+                                </DataGrid.Resources>
+
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID"
                                                 Binding="{Binding Id}"
                                                 Width="50"
                                                 IsReadOnly="True">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="TextAlignment" Value="Center"/>
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
-                            
-                            <DataGridTextColumn Header="제목"
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="제목"
                                                 Binding="{Binding Title}"
                                                 Width="200">
-                                <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="TextAlignment" Value="Left"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Left"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
 
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsCompleted}" Value="True">
-                                            <Setter Property="TextDecorations" Value="Strikethrough"/>
-                                            <Setter Property="Foreground" Value="#A0A0A0"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                        <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                        <Setter Property="Foreground" Value="#A0A0A0"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
 
-                            <DataGridTextColumn Header="설명"
+                                    <DataGridTextColumn Header="설명"
                                                 Binding="{Binding Description}"
                                                 Width="*">
-                                <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="TextAlignment" Value="Left"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Left"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
 
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsCompleted}" Value="True">
-                                            <Setter Property="TextDecorations" Value="Strikethrough"/>
-                                            <Setter Property="Foreground" Value="#A0A0A0"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                        <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                        <Setter Property="Foreground" Value="#A0A0A0"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
 
-                            <DataGridCheckBoxColumn Header="상태"
+                                    <DataGridCheckBoxColumn Header="상태"
                                                     Binding="{Binding IsCompleted}"
                                                     Width="60">
-                                <DataGridCheckBoxColumn.ElementStyle>
-                                    <Style TargetType="CheckBox">
-                                        <Setter Property="HorizontalAlignment" Value="Center"/>
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                    </Style>
-                                </DataGridCheckBoxColumn.ElementStyle>
-                            </DataGridCheckBoxColumn>
-                            
-                            <DataGridTextColumn Header="생성일"
+                                        <DataGridCheckBoxColumn.ElementStyle>
+                                            <Style TargetType="CheckBox">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridCheckBoxColumn.ElementStyle>
+                                    </DataGridCheckBoxColumn>
+
+                                    <DataGridTextColumn Header="생성일"
                                                 Binding="{Binding CreatedAt, StringFormat=yyyy-MM-dd HH:mm}"
                                                 Width="220"
                                                 IsReadOnly="True"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Border>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
 
-                <!-- 하단 액션 버튼 -->
-                <UniformGrid Grid.Row="6"
+                        <!-- 하단 액션 버튼 -->
+                        <UniformGrid Grid.Row="6"
                              Columns="4"
                              HorizontalAlignment="Stretch"
                              Margin="0">
-                    <Button Style="{StaticResource RoundedButtonStyle}"
+                            <Button Style="{StaticResource AnimatedRoundedButtonStyle}"
                             Margin="0,0,18,0"
                             Content="불러오기"
                             Click="LoadButton_Click"/>
 
-                    <Button Style="{StaticResource RoundedButtonStyle}"
+                            <Button Style="{StaticResource AnimatedRoundedButtonStyle}"
                             Margin="0,0,18,0"
                             Content="저장하기"
                             Click="SaveButton_Click"/>
 
-                    <Button Style="{StaticResource RoundedButtonStyle}"
+                            <Button Style="{StaticResource AnimatedRoundedButtonStyle}"
                             Margin="0,0,18,0"
                             Content="완료 토글"
                             Click="ToggleCompleteButton_Click"/>
 
-                    <Button Style="{StaticResource RoundedButtonStyle}"
+                            <Button Style="{StaticResource AnimatedRoundedButtonStyle}"
                             Content="삭제하기"
                             Click="DeleteButton_Click"/>
-                </UniformGrid>
+                        </UniformGrid>
+                    </Grid>
+                </Border>
             </Grid>
-        </Border>
-    </Grid>
+        </Grid>
+    </Border>
+
 </Window>
